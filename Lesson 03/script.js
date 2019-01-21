@@ -17,6 +17,18 @@ const simpleNumArray = (num) =>{
 	return arr;
 }
 
+const simpleNumArray2 = (num) =>{
+	let arr = [];
+	let i = 2;
+	while(i<=num){
+		if(checkSimpleNum(i)){ //на каждой итерации проверяем через функцию на true false;
+			arr.push(i);
+		}
+		i++;
+	}
+	return arr;
+}
+
 console.log('Вывод массива простых чисел от 0 до 100: '+simpleNumArray(100));
 
 /* 2. Начиная с этого урока, мы начинаем работать с функционалом интернет-магазина.
