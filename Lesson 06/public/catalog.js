@@ -7,7 +7,7 @@ let catalogDb = {
 		return this._items;
 	},
 	// функция добавления продукта
-	addItem(name, cost, details, img, desc){
+	addItem(name, cost, details, img, img2, desc){
 		let idNum = this.idStart;
 		let newItem = {
 			name,
@@ -15,6 +15,7 @@ let catalogDb = {
 			id: idNum,
 			details,
 			img,
+			img2,
 			desc
 		};
 		this.items[idNum] = newItem;
@@ -63,10 +64,10 @@ let catalogDb = {
 	htmlEdit(elem, param){
 		return elem.innerHTML = param;
 	},
-	htmlAppend(parent, child){
-		return parent.appendChild(child);
+	htmlAppend(parent, elem){
+		return parent.appendChild(elem);
 	},
-	htmlInsertAfter(elem, afterElem) {
+	htmlInsertAfter(afterElem, elem) {
 		afterElem.parentNode.insertBefore(elem, afterElem.nextSibling);
 		return;
 	},
@@ -76,7 +77,7 @@ let catalogDb = {
 		/*
 			<img src='it[key].img' />
 		*/
-		return '<img src="'+it[key].img+'" />'
+		return '<img id="'+this.items[key].id+'" onclick="cdb.htmlPictureModule('+this.items[key].id+')" src="'+it[key].img+'" alt="'+this.items[key].details+'" />'
 	},
 	//  получить описание товара из каталога
 	htmlGetDescFrom(key){
@@ -129,14 +130,17 @@ let catalogDb = {
 				/* creating item in catalog wrap */
 				const catalog = this.htmlCreateForm('div', '', 'catalog');
 				this.htmlAppend(wrapper, catalog);
+
 				/* creating Img div and pushing img src there */
 				let imageDiv = this.htmlCreateForm('div','','img');
 				this.htmlEdit(imageDiv,this.htmlGetImageFrom(keys));
 				this.htmlAppend(catalog, imageDiv);
+
 				/* creating description div */
 				let descDiv = this.htmlCreateForm('div','','desc');
 				this.htmlEdit(descDiv, this.htmlGetDescFrom(keys));
 				this.htmlAppend(catalog, descDiv);
+
 				/* adding buy button */
 				let buyDiv = this.htmlCreateForm('div', '', 'buy');
 				buyDiv.setAttribute('onclick', this.htmlGetBuyAttribute(keys));
@@ -156,15 +160,90 @@ let catalogDb = {
 			return;
 		}
 	},
+	htmlPictureModule(id){
+		// Get the modal
+		const modal = document.getElementById('myModal');
+
+		// checking if modal block already shown:
+		if(modal.style.display === 'block'){
+			/* do nothing */
+			console.log('Picture Module already opened');
+			return;
+		} else {
+			// link to modal IMG container
+			let modalImg = document.getElementById("img01");
+			// link to caption container
+			let captionText = document.getElementById("caption");
+
+			modal.style.display = "block"; // showing the block
+			modalImg.src = this.items[id].img; // switch of source
+			modalImg.alt = 'img' // pitting alt
+			captionText.innerHTML = this.items[id].details; // switch of alt
+
+			// Get the <span> element that closes the modal
+			let span = document.getElementsByClassName("close")[0];
+
+			// When the user clicks on <span> (x), close the modal
+			span.onclick = () => { 
+			  modal.style.display = "none";
+			}
+		
+			/* putting previev gallery */
+				/* putting previev gallery */
+					/* putting previev gallery */
+			let previewLink = document.getElementById('preview');
+
+			/* проверяем, есть ли элемнет на странице */
+			if(document.getElementById('img02')){
+				// если элемент есть
+				let img2 = document.getElementById('img02');
+				/* проверяем по значению alt */
+				img2.onclick = () =>{
+					if(modalImg.alt === 'img'){
+						modalImg.src = this.items[id].img2; // switch of source
+						modalImg.alt = 'img2'; // switch of alt
+						img2.src = this.items[id].img; // switch of thumbnail
+						/* меняем местами картинки по клику */
+					} else {
+						console.log(modalImg.src+' || '+this.items[id].img);
+						modalImg.src = this.items[id].img; // switch of source
+						modalImg.alt = 'img'; // switch of alt
+						img2.src = this.items[id].img2; // switch of thumbnail
+					}
+				}
+				return;
+			/* если не нашли элемент на странице, то создаем */
+			} else {
+				/* creting form*/
+				let img2 = this.htmlCreateForm('img', 'img02', '');
+				img2.setAttribute('src', this.items[id].img2);
+				this.htmlAppend(previewLink, img2);
+				/* проверяем по значению alt */
+				img2.onclick = () =>{
+					if(modalImg.alt === 'img'){
+						modalImg.src = this.items[id].img2; // switch of source
+						modalImg.alt = 'img2'; // switch of alt
+						img2.src = this.items[id].img; // switch of thumbnail
+						/* меняем местами картинки по клику */
+					} else {
+						modalImg.src = this.items[id].img; // switch of source
+						modalImg.alt = 'img'; // switch of alt
+						img2.src = this.items[id].img2; // switch of thumbnail
+					}
+				}
+				return;
+			}
+		}
+	},
 };
 
 const cdb = catalogDb; // link to main obj
 
 /* Добавляем предметы в БД */
-cdb.addItem('Грелка', 50, 'KKG-001', 'public/placeholder.png' ,'Описание продукта – это главное основание для покупки. От того, сможете ли вы убедить посетителя в потребности в вашем товаре зависит купит он его или нет. Страничка товара — это последний пункт в воронке продаж перед тем, как пользователь нажмет «оформить заказ».');
-cdb.addItem('Утюг', 100,'Samsung G433', 'public/placeholder.png', 'Описание продукта – это главное основание для покупки. От того, сможете ли вы убедить посетителя в потребности в вашем товаре зависит купит он его или нет. Страничка товара — это последний пункт в воронке продаж перед тем, как пользователь нажмет «оформить заказ».');
-cdb.addItem('Кофеварка', 50, 'Bork F123', 'public/placeholder.png', 'Описание продукта – это главное основание для покупки. От того, сможете ли вы убедить посетителя в потребности в вашем товаре зависит купит он его или нет. Страничка товара — это последний пункт в воронке продаж перед тем, как пользователь нажмет «оформить заказ».');
-cdb.addItem('Пылесос', 250, 'Dison J21', 'public/placeholder.png', 'Описание продукта – это главное основание для покупки. От того, сможете ли вы убедить посетителя в потребности в вашем товаре зависит купит он его или нет. Страничка товара — это последний пункт в воронке продаж перед тем, как пользователь нажмет «оформить заказ».');
+cdb.addItem('Грелка', 50, 'KKG-001', './public/placeholder.png', './public/placeholder2.jpg', 'Описание продукта – это главное основание для покупки. От того, сможете ли вы убедить посетителя в потребности в вашем товаре зависит купит он его или нет. Страничка товара — это последний пункт в воронке продаж перед тем, как пользователь нажмет «оформить заказ».');
+cdb.addItem('Утюг', 100,'Samsung G433', 'public/placeholder.png', 'public/placeholder2.jpg', 'Описание продукта – это главное основание для покупки. От того, сможете ли вы убедить посетителя в потребности в вашем товаре зависит купит он его или нет. Страничка товара — это последний пункт в воронке продаж перед тем, как пользователь нажмет «оформить заказ».');
+cdb.addItem('Кофеварка', 50, 'Bork F123', 'public/placeholder.png', 'public/placeholder2.jpg', 'Описание продукта – это главное основание для покупки. От того, сможете ли вы убедить посетителя в потребности в вашем товаре зависит купит он его или нет. Страничка товара — это последний пункт в воронке продаж перед тем, как пользователь нажмет «оформить заказ».');
+cdb.addItem('Пылесос', 250, 'Dison J21', 'public/placeholder.png', 'public/placeholder2.jpg', 'Описание продукта – это главное основание для покупки. От того, сможете ли вы убедить посетителя в потребности в вашем товаре зависит купит он его или нет. Страничка товара — это последний пункт в воронке продаж перед тем, как пользователь нажмет «оформить заказ».');
 console.log('Загруженный каталог товаров:');
 console.log(cdb.items);
 
@@ -175,7 +254,7 @@ console.log(cdb.items);
 	const description3 = document.getElementById('description');
 	//cdb.htmlAppend(mainPageWrap, catalogWrap);
 
-	cdb.htmlInsertAfter(catalogWrap, description3); // вставляем враппер после описания ДЗ
+	cdb.htmlAppend(mainPageWrap, catalogWrap); // вставляем враппер после описания ДЗ
 
 	cdb.htmlGenerateCatalog(catalogWrap);  // генерим контент в каталог
 

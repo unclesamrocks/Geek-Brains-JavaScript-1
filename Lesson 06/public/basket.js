@@ -100,10 +100,10 @@ let itemsDatabaseObj = {
 	htmlEdit(elem, param){
 		return elem.innerHTML = param;
 	},
-	htmlAppend(parent, child){
-		return parent.appendChild(child);
+	htmlAppend(parent, elem){
+		return parent.appendChild(elem);
 	},
-	htmlInsertAfter(elem, afterElem) {
+	htmlInsertAfter(afterElem, elem) {
 		afterElem.parentNode.insertBefore(elem, afterElem.nextSibling);
 	},
 	// возвращет массив html с контентом корзины
@@ -126,6 +126,7 @@ let itemsDatabaseObj = {
 		const basket = document.getElementById('basket');
 		this.htmlEdit(basket, this.htmlGenerateBasket());
 	},
+	// вызывает функцию на клике по кнопке "купить"
 	htmlInit(name, count){
 		this.addBasket(name, count);
 		this.htmlUpdateBasketForm();
@@ -155,7 +156,7 @@ const db = itemsDatabaseObj; //link to itemsDatabaseObj
 const mainwrap = document.getElementById('wrap'); // link to main wrap
 const description2 = document.getElementById('description');
 const basketWrap = db.htmlCreateForm('div', 'basketWrap'); // creating basket wrap
-db.htmlInsertAfter(basketWrap,description2); // appending to main wrap
+db.htmlAppend(mainwrap, basketWrap); // appending to main wrap
 
 const basketWrapLink = document.getElementById('basketWrap'); // linking basket wrap
 const basket = db.htmlCreateForm('div', 'basket'); // creating basket form
