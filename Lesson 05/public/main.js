@@ -91,3 +91,53 @@ for(let i=numbers.length-1;i>=0;i--){
 	colBlock2.innerHTML = numbers[i];
 	numberCol2.appendChild(colBlock2);
 }
+/* Getting chessboards elements */
+let chessSquares = document.getElementsByClassName('chessBlock');
+/* chess pieces massives*/
+const chessPiecesUp = ['Л', 'К', 'Ф', 'Д', 'Кр', 'Ф', 'К', 'Л', 'П', 'П', 'П', 'П', 'П', 'П', 'П', 'П'];
+const chessPiecesDown = ['П', 'П', 'П', 'П', 'П', 'П', 'П', 'П', 'Л', 'К', 'Ф', 'Д', 'Кр', 'Ф', 'К', 'Л'];
+/* inserting pieces to places UP */
+let q = 0;
+for (keys in chessPiecesUp){
+	chessSquares[q].innerHTML = chessPiecesUp[keys];
+	q++;
+}
+/* inserting pieces to places Down */
+q = 48;
+for (keys in chessPiecesDown){
+	chessSquares[q].innerHTML = chessPiecesDown[keys];
+	q++;
+}
+/* object with pics links */
+const chessPics = {
+	'Л': {
+		urlW: '',
+		urlB: ''
+	},
+	'К': {
+		urlW: '',
+		urlB: ''
+	},
+	'Ф': {
+		urlW: '',
+		urlB: ''
+	},
+	'Д': {
+		urlW: '',
+		urlB: ''
+	}, 
+	'Кр': {
+		urlW: '',
+		urlB: ''
+	}, 
+	'Ф': {
+		urlW: '',
+		urlB: ''
+	},
+	'П': {
+		urlW: '',
+		urlB: ''
+	}
+}
+/* passing links to respective squares */
+
