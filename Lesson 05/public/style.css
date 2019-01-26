@@ -75,6 +75,11 @@ html{
 	height:20px;
 	float:left;
 }
+.chessBlock img {
+	width: 90%;
+	height: auto;
+	margin-left: -5px;
+}
 .chessRow, .chessCol{
 	border: 1px solid white;
 }

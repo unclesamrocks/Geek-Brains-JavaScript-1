@@ -111,33 +111,48 @@ for (keys in chessPiecesDown){
 /* object with pics links */
 const chessPics = {
 	'Л': {
-		urlW: '',
-		urlB: ''
+		urlW: './public/Alpha2/WhiteRook.svg',
+		urlB: './public/Alpha2/BlackRook.svg'
 	},
 	'К': {
-		urlW: '',
-		urlB: ''
+		urlW: './public/Alpha2/WhiteKnight.svg',
+		urlB: './public/Alpha2/BlackKnight.svg'
 	},
 	'Ф': {
-		urlW: '',
-		urlB: ''
+		urlW: './public/Alpha2/WhiteBishop.svg',
+		urlB: './public/Alpha2/BlackBishop.svg'
 	},
 	'Д': {
-		urlW: '',
-		urlB: ''
+		urlW: './public/Alpha2/WhiteQueen.svg',
+		urlB: './public/Alpha2/BlackQueen.svg'
 	}, 
 	'Кр': {
-		urlW: '',
-		urlB: ''
+		urlW: './public/Alpha2/WhiteKing.svg',
+		urlB: './public/Alpha2/BlackKing.svg'
 	}, 
-	'Ф': {
-		urlW: '',
-		urlB: ''
-	},
 	'П': {
-		urlW: '',
-		urlB: ''
+		urlW: './public/Alpha2/WhitePawn.svg',
+		urlB: './public/Alpha2/BlackPawn.svg'
 	}
 }
 /* passing links to respective squares */
 
+// chessSquares[1].innerHTML = '<img src="./public/chessPieces.png" />';
+const imgTagBeg = '<img src="';
+const imgTagEnd = '" />';
+/* UP row */
+for(let i=0; i<16; i++){
+	for(keys in chessPics){
+		if(keys === chessSquares[i].innerHTML){
+			chessSquares[i].innerHTML = imgTagBeg + chessPics[keys].urlW + imgTagEnd;
+		}
+	}
+}
+/* down row */
+for(let i=48; i<chessSquares.length; i++){
+	for(keys in chessPics){
+		if(keys === chessSquares[i].innerHTML){
+			chessSquares[i].innerHTML = imgTagBeg + chessPics[keys].urlB + imgTagEnd;
+		}
+	}
+}
