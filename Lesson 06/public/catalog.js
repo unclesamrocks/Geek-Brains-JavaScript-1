@@ -192,47 +192,32 @@ let catalogDb = {
 				/* putting previev gallery */
 					/* putting previev gallery */
 			let previewLink = document.getElementById('preview');
+			let img2; 
 
 			/* проверяем, есть ли элемнет на странице */
 			if(document.getElementById('img02')){
-				// если элемент есть
-				let img2 = document.getElementById('img02');
-				/* проверяем по значению alt */
-				img2.onclick = () =>{
-					if(modalImg.alt === 'img'){
-						modalImg.src = this.items[id].img2; // switch of source
-						modalImg.alt = 'img2'; // switch of alt
-						img2.src = this.items[id].img; // switch of thumbnail
-						/* меняем местами картинки по клику */
-					} else {
-						console.log(modalImg.src+' || '+this.items[id].img);
-						modalImg.src = this.items[id].img; // switch of source
-						modalImg.alt = 'img'; // switch of alt
-						img2.src = this.items[id].img2; // switch of thumbnail
-					}
-				}
-				return;
+				img2 = document.getElementById('img02');
 			/* если не нашли элемент на странице, то создаем */
 			} else {
-				/* creting form*/
-				let img2 = this.htmlCreateForm('img', 'img02', '');
+				img2 = this.htmlCreateForm('img', 'img02', '');
 				img2.setAttribute('src', this.items[id].img2);
 				this.htmlAppend(previewLink, img2);
-				/* проверяем по значению alt */
-				img2.onclick = () =>{
-					if(modalImg.alt === 'img'){
-						modalImg.src = this.items[id].img2; // switch of source
-						modalImg.alt = 'img2'; // switch of alt
-						img2.src = this.items[id].img; // switch of thumbnail
-						/* меняем местами картинки по клику */
-					} else {
-						modalImg.src = this.items[id].img; // switch of source
-						modalImg.alt = 'img'; // switch of alt
-						img2.src = this.items[id].img2; // switch of thumbnail
-					}
-				}
-				return;
 			}
+
+			/* проверяем по значению alt */
+				/* меняем местами картинки по клику */
+			img2.onclick = () =>{
+				if(modalImg.alt === 'img'){
+					modalImg.src = this.items[id].img2; // switch of source
+					modalImg.alt = 'img2'; // switch of alt
+					img2.src = this.items[id].img; // switch of thumbnail
+				} else {
+					modalImg.src = this.items[id].img; // switch of source
+					modalImg.alt = 'img'; // switch of alt
+					img2.src = this.items[id].img2; // switch of thumbnail
+				} 
+			}
+			return;	
 		}
 	},
 };
