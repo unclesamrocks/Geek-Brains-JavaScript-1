@@ -29,12 +29,18 @@ let itemsDatabaseObj = {
 			name,
 			count
 		}
-		this.basket[name] = newBasket;
+		if(this.basket[name]){
+			this.basket[name].count++;
+		} else {
+			this.basket[name] = newBasket;
+		}
+		// console.log(this.basket);
+
 	},
 	// возвращаем ID предмета
 	getItemId(name){
-		let keysFromDb = Object.keys(this.items);
-		const db = this.items;
+		let keysFromDb = Object.keys(cdb.items);
+		const db = cdb.items;
 		for (keysFromDb in db){
 			if(name === db[keysFromDb].name){
 				return db[keysFromDb].id;
@@ -47,7 +53,7 @@ let itemsDatabaseObj = {
 		delete this.items[name];
 	},
 	getItemCost(id){
-		return this.items[id].cost;
+		return cdb.items[id].cost;
 	},
 	// функция возврата полной стоимости корзины с учетом количества каждого элемента:
 	calculateBasketCost(){
@@ -76,6 +82,16 @@ let itemsDatabaseObj = {
 			return false;
 		}
 	},
+	// вывод инфо по корзине в консоль
+	getBasketInfoConsole(){
+		console.log('*** *** *** *** *** ***');
+		for(item in this.basket){
+			console.log(this.basket[item].name+', в количестве: '+this.basket[item].count+' шт., стоимость ед.: '+cdb.items[this.getItemId(this.basket[item].name)].cost);
+		}
+		console.log('Стоимость корзины: '+this.calculateBasketCost());
+		console.log('*** *** *** *** *** ***');
+	},
+	// создание корзины на странице
 	htmlCreateForm(type, id){
 		let element = document.createElement(type);
 		element.setAttribute('id', id);
@@ -90,36 +106,48 @@ let itemsDatabaseObj = {
 	htmlInsertAfter(elem, afterElem) {
 		afterElem.parentNode.insertBefore(elem, afterElem.nextSibling);
 	},
+	// возвращет массив html с контентом корзины
 	htmlGenerateBasket(){
+		// проверяет, есть ли товары в корзине
 		if(!this.checkEmptyBasket()){
-			return 'В корзине '+this.calculateBasketCount()+' товаров, на сумму: '+this.calculateBasketCost()+' рублей.'
+			let result = ['<h3>В корзине товаров:</h3>'];
+			for (keys in this.basket){
+				result.push('<p>'+this.basket[keys].name+', '+this.basket[keys].count+' шт.;</p>');
+			}
+			result.push('<p>Всего '+this.calculateBasketCount()+' товаров, на сумму: '+this.calculateBasketCost()+' рублей.</p>');
+			return result.join('');
+		// если корзина пустая:
 		} else {
 			return 'Корзина пуста';
 		}
 	},
+	// вызывает функцию на клике по кнопке "купить"
+	htmlUpdateBasketForm(){
+		const basket = document.getElementById('basket');
+		this.htmlEdit(basket, this.htmlGenerateBasket());
+	},
+	htmlInit(name, count){
+		this.addBasket(name, count);
+		this.htmlUpdateBasketForm();
+	}
 };
 
 /* Добавляем предметы в БД */
-itemsDatabaseObj.addItem('Грелка', 50, 'KKG-001');
-itemsDatabaseObj.addItem('Утюг', 100,'Samsung G433');
-itemsDatabaseObj.addItem('Кофеварка', 50, 'Bork F123');
-itemsDatabaseObj.addItem('Пылесос', 250, 'Dison J21');
-console.log('База товаров:');
-console.log(itemsDatabaseObj.items);
-/* Добавляем предметы в корзину */
-itemsDatabaseObj.addBasket('Утюг',2);
-itemsDatabaseObj.addBasket('Кофеварка',3);
-itemsDatabaseObj.addBasket('Пылесос',1);
-console.log('Корзина:');
-console.log(itemsDatabaseObj.basket);
+// itemsDatabaseObj.addItem('Грелка', 50, 'KKG-001');
+// itemsDatabaseObj.addItem('Утюг', 100,'Samsung G433');
+// itemsDatabaseObj.addItem('Кофеварка', 50, 'Bork F123');
+// itemsDatabaseObj.addItem('Пылесос', 250, 'Dison J21');
+// console.log('База товаров:');
+// console.log(itemsDatabaseObj.items);
+// /* Добавляем предметы в корзину */
+// itemsDatabaseObj.addBasket('Утюг',2);
+// itemsDatabaseObj.addBasket('Кофеварка',3);
+// itemsDatabaseObj.addBasket('Пылесос',1);
+// console.log('Корзина:');
+// console.log(itemsDatabaseObj.basket);
 
 /* Инфо часть: */
-console.log('*** *** *** *** *** ***');
-for(item in itemsDatabaseObj.basket){
-	console.log(itemsDatabaseObj.basket[item].name+', в количестве: '+itemsDatabaseObj.basket[item].count+' шт., стоимость ед.: '+itemsDatabaseObj.items[itemsDatabaseObj.getItemId(itemsDatabaseObj.basket[item].name)].cost);
-}
-console.log('Стоимость корзины: '+itemsDatabaseObj.calculateBasketCost());
-console.log('*** *** *** *** *** ***');
+
 
 /* Логика отображения: */
 const db = itemsDatabaseObj; //link to itemsDatabaseObj

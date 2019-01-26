@@ -90,6 +90,21 @@ let catalogDb = {
 		let result = '<h3>'+it[key].name+'</h3><h4>'+it[key].details+'</h4><h5>Стоимость: '+it[key].cost+' рублей</h5><p>'+it[key].desc+'</p>';
 		return result;
 	},
+	htmlGetButtonFrom(key){
+		const it = this.items;
+			/*
+				Добавить в корзину
+			*/
+		let result = '<h2>Добавить в корзину</h2>';
+		return result;
+	},
+	htmlGetBuyAttribute(key){
+		const it = this.items;
+		/*
+			
+		*/
+		return 'db.htmlInit("'+this.items[keys].name+'", 1)';
+	},
 	// генерит контент из каталога
 	htmlGenerateCatalog(wrapper){
 		// checking if catalog has any items:
@@ -105,7 +120,10 @@ let catalogDb = {
 							<h4> key.details         </h4>
 							<h5> Стоимость: key.cost </h5>
 							<p > key.desc            </p >							
-						<div>
+						</div>
+						<div class='buy' onclick="XXXX('key.id')">
+							Добавить в корзину
+						</div>
 					</div>
 				*/
 				/* creating item in catalog wrap */
@@ -119,6 +137,11 @@ let catalogDb = {
 				let descDiv = this.htmlCreateForm('div','','desc');
 				this.htmlEdit(descDiv, this.htmlGetDescFrom(keys));
 				this.htmlAppend(catalog, descDiv);
+				/* adding buy button */
+				let buyDiv = this.htmlCreateForm('div', '', 'buy');
+				buyDiv.setAttribute('onclick', this.htmlGetBuyAttribute(keys));
+				this.htmlEdit(buyDiv, this.htmlGetButtonFrom(keys));
+				this.htmlAppend(catalog, buyDiv);
 			}
 			return;
 		} else {
@@ -145,15 +168,17 @@ cdb.addItem('Пылесос', 250, 'Dison J21', 'public/placeholder.png', 'Оп�
 console.log('Загруженный каталог товаров:');
 console.log(cdb.items);
 
-/* Генерим формы на странице */
-const mainPageWrap = document.getElementById('wrap'); // linking main wrap
-const catalogWrap = cdb.htmlCreateForm('div', 'catalogWrap');
-const description3 = document.getElementById('description');
-//cdb.htmlAppend(mainPageWrap, catalogWrap);
+/* start */
+	/* Генерим формы на странице */
+	const mainPageWrap = document.getElementById('wrap'); // linking main wrap
+	const catalogWrap = cdb.htmlCreateForm('div', 'catalogWrap');
+	const description3 = document.getElementById('description');
+	//cdb.htmlAppend(mainPageWrap, catalogWrap);
 
-cdb.htmlInsertAfter(catalogWrap, description3); // вставляем враппер после описания ДЗ
+	cdb.htmlInsertAfter(catalogWrap, description3); // вставляем враппер после описания ДЗ
 
-cdb.htmlGenerateCatalog(catalogWrap);  // генерим контент в каталог
+	cdb.htmlGenerateCatalog(catalogWrap);  // генерим контент в каталог
+
 
 
 

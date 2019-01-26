@@ -34,9 +34,13 @@ html{
 	width: 150px;
 	min-height: 75px;
 }
-.button:hover {
+.button:hover, .buy:hover {
 	background-color: black;
 	cursor: pointer;
+}
+.buy:active{
+	background-color: red;
+	color: black;
 }
 .clicked, .clicked:hover {
 	background-color: black;
@@ -119,15 +123,10 @@ html{
 }
 /* ======= Catalog ======= */
 #catalogWrap{
-	border: 1px dotted darkgrey;
 	padding: 10px 15px;
 	margin: 10px 0px;
 	color: rgb(69,174,214);
 	width: 90%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex-wrap: wrap;
 }
 .catalog{
 	border: 1px dotted darkgrey;
@@ -151,4 +150,8 @@ html{
 .catalog .desc h3, .catalog .desc h4, .catalog .desc h5, .catalog .desc p{
 	margin: 5px 0px;
 	padding: 0;
+}
+.buy{
+
+	border: 1px dotted darkgrey;
 }
