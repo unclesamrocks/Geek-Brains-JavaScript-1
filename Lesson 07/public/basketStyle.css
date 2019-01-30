@@ -4,7 +4,65 @@ html{
 	margin: 0;
 	text-align: center;
 	box-sizing: border-box;
+	color: rgb(69,174,214);
 }
-h2{
-	color: aqua;
+.wrap {
+	width: 90%;
+	margin: 0 auto;
+}
+.contain-wrap{
+	width: 90%;
+	margin: 0 auto;
+}
+.logo {
+	display: inline-block;
+	vertical-align: middle;
+	width: 49%;
+}
+.arr{
+	text-align: right;
+}
+.arrow {
+	height: 25px;
+	transform: rotate(90deg);
+}
+
+.hidden{
+	display: none;
+}
+#contain-div{
+	min-height: 100px;
+}
+.item-desc, .item-stats, .total-sum{
+	margin: 0 auto;
+}
+.item-desc{
+	width: 54%;
+}
+.item-stats{
+	width: 45%;
+}
+.item-wrap, .total-sum{
+	width: 90%;
+	margin: 0 auto;
+}
+
+.item-desc, .item-stats, .item-plus, .item-count, .item-minus, .items-sum{
+	display: inline-block;
+	vertical-align: middle;
+}
+.item-desc, .item-stats, .total-sum{
+	height: 50px;
+	border: 1px dotted gray;
+}
+.item-desc{
+	text-align: left;
+}
+.item-stats{
+}
+.item-plus, .item-minus, .item-count, .items-sum{
+	text-align: center;
+	width: 75px;
+	height: 100%;
+	border: 1px dotted gray;
 }

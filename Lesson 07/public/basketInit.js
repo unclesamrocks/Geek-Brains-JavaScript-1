@@ -1,9 +1,4 @@
-const basketInitParams = decodeURI(location.toString());
-console.log(basketInitParams);
-
 let itemsDatabaseObj = {
-	// перечень товаров в категории Items
-	_items: {},
 	_basket: {},
 	idStart: 9990,
 	// ссылка на items:
@@ -12,19 +7,6 @@ let itemsDatabaseObj = {
 	},
 	get basket(){
 		return this._basket;
-	},
-	// функция добавления продукта
-	addItem(name, cost, details){
-		let idNum = this.idStart;
-		let newItem = {
-			name,
-			cost,
-			id: idNum,
-			details
-		};
-		this.items[idNum] = newItem;
-		this.idStart++;
-		return idNum;
 	},
 	// функция добавляения продуктов в корзине
 	addBasket(name, count){
@@ -77,6 +59,16 @@ let itemsDatabaseObj = {
 		}
 		return total;		
 	},
+	calculateItemsCost(name){
+		const itemId = this.getItemId(name);
+
+		let total = 0;
+		const query = this.basket;
+		
+		total += (this.getItemCost(itemId)*query[name].count);
+
+		return total;
+	},
 	// проверяем, есть ли предметы в корзине:
 	checkEmptyBasket(){
 		if(Object.keys(this.basket).length === 0){
@@ -113,39 +105,182 @@ let itemsDatabaseObj = {
 	htmlGenerateBasket(){
 		// проверяет, есть ли товары в корзине
 		if(!this.checkEmptyBasket()){
-			let result = ['<h3>В корзине товаров:</h3>'];
-			const buyDiv = `<div id='buyButton' onclick='db.htmlGetURL()'><h2>Перейти в корзину</h2></div>`
-			for (keys in this.basket){
-				result.push('<p>'+this.basket[keys].name+', '+this.basket[keys].count+' шт.;</p>');
+			/*
+			<div class='item-wrap'>
+				<div class='item-desc'>
+					название
+				</div>
+				<div class='item-stats'>
+					<div class='item-plus'>
+						кнопка +
+					</div>
+					<div class='item-count'>
+						текущее количество
+					</div>
+					<div class='item-minus'>
+						кнопка -
+					</div>
+					<div class='items-sum'>
+						SUMM
+					</div>
+				</div>
+			</div>
+			*/
+			let result = []
+			for (items in this.basket){
+				result.push(`<div class='item-wrap'><div class='item-desc'>${this.basket[items].name}</div><div class='item-stats'><div class='item-plus' onclick='db.htmlPlusItem("${this.basket[items].name}")'>Добавить</div><div class='item-count' data-name='${this.basket[items].name}'>${this.basket[items].count}</div><div class='item-minus' onclick='db.htmlMinusItem("${this.basket[items].name}")'>Убрать</div><div class='items-sum' data-name='${this.basket[items].name}'>${this.calculateItemsCost(items)}</div></div></div>`);			
 			}
-			result.push('<p>Всего '+this.calculateBasketCount()+' товаров, на сумму: '+this.calculateBasketCost()+' рублей.</p>'+buyDiv);
+			result.push(`<div class='total-sum'>${this.calculateBasketCost()}</div>`)
 			return result.join('');
 		// если корзина пустая:
 		} else {
 			return 'Корзина пуста';
 		}
 	},
-	// вызывает функцию на клике по кнопке "купить"
-	htmlUpdateBasketForm(){
-		const basket = document.getElementById('basket');
-		this.htmlEdit(basket, this.htmlGenerateBasket());
-	},
-	// вызывает функцию на клике по кнопке "купить"
-	htmlInit(name, count){
-		this.addBasket(name, count);
-		this.htmlUpdateBasketForm();
-	},
-	htmlGetURL(){
-		let urlParam = '?';
-		for(items in this.basket){
-			urlParam += `${this.basket[items].name}=${this.basket[items].count}&`
+	htmlPlusItem(name){	
+		console.log(`Plus item ${name}`);
+		// putting additional item in count
+		this.basket[name].count++;
+		// putting count number in item's innerHTML
+		const countLink = document.getElementsByClassName('item-count');
+		for(let i=0; i<countLink.length;i++){
+			if(countLink[i].dataset.name === name){
+				countLink[i].innerHTML = this.basket[name].count;
+			}
 		}
-		// console.log(urlParam.substr(0,urlParam.length-1));
+		// update SUM
+		const sumLink = document.getElementsByClassName('items-sum');
+		for(let i=0; i<sumLink.length;i++){
+			if(sumLink[i].dataset.name === name){
+				sumLink[i].innerHTML = this.calculateItemsCost(name);
+			}
+		}
+		// update TOTAL COST
+		document.getElementsByClassName('total-sum')[0].innerHTML = this.calculateBasketCost();
+		return;
+	},
+	htmlMinusItem(name){
+		console.log(`Minus item ${name}`);
 
-		// window.location.replace('./basket.html');
-		window.location.href = `./basket.html${urlParam.substr(0,urlParam.length-1)}`;
+		this.basket[name].count--;
+
+		if(this.basket[name].count === 0){
+			delete this.basket[name];
+			this.htmlEdit(basketDivLink, this.htmlGenerateBasket());
+			return;
+		}
+		// putting count number in item's innerHTML
+		const countLink = document.getElementsByClassName('item-count');
+		for(let i=0; i<countLink.length;i++){
+			if(countLink[i].dataset.name === name){
+				countLink[i].innerHTML = this.basket[name].count;
+			}
+		}
+		// update SUM
+		const sumLink = document.getElementsByClassName('items-sum');
+		for(let i=0; i<sumLink.length;i++){
+			if(sumLink[i].dataset.name === name){
+				sumLink[i].innerHTML = this.calculateItemsCost(name);
+			}
+		}
+		// update TOTAL COST
+		document.getElementsByClassName('total-sum')[0].innerHTML = this.calculateBasketCost();
+		return;
 	},
 };
 
-/* Логика отображения: */
+let catalogDb = {
+	// перечень товаров в категории Items
+	_items: {},
+	idStart: 9990,
+	// ссылка на items:
+	get items(){
+		return this._items;
+	},
+	// функция добавления продукта
+	addItem(name, cost, details, img, img2, img3, desc){
+		let idNum = this.idStart;
+		let newItem = {
+			name,
+			cost,
+			id: idNum,
+			details,
+			img,
+			img2,
+			img3,
+			desc
+		};
+		this.items[idNum] = newItem;
+		this.idStart++;
+		return idNum;
+	},
+	// поиск ID предмета по name
+	getItemId(name){
+		let keysFromDb = Object.keys(this.items);
+		const db = this.items;
+		for (keysFromDb in db){
+			if(name === db[keysFromDb].name){
+				return db[keysFromDb].id;
+			}
+		}
+		return 'Nothing found';
+	},
+	// функция удаления продукта:
+	removeItem(name){
+		delete this.items[name];
+	},
+	// возвращает стоимость по ID
+	getItemCost(id){
+		return this.items[id].cost;
+	},
+	// проверка, есть ли в каталоге товары
+	checkEmptyItems(){
+		if(Object.keys(this.items).length === 0){
+			return true;
+		} else {
+			return false;
+		}
+	},
+};
+
+const cdb = catalogDb; // link to main obj
 const db = itemsDatabaseObj; //link to itemsDatabaseObj
+
+/* Добавляем предметы в БД */
+cdb.addItem('Грелка', 50, 'KKG-001', './public/1.jpg', './public/22.jpg', './public/3.jpg', 'Описание продукта – это главное основание для покупки. От того, сможете ли вы убедить посетителя в потребности в вашем товаре зависит купит он его или нет. Страничка товара — это последний пункт в воронке продаж перед тем, как пользователь нажмет «оформить заказ».');
+cdb.addItem('Утюг', 100,'Samsung G433', './public/1.jpg', './public/2.jpg', './public/3.jpg', 'Описание продукта – это главное основание для покупки. От того, сможете ли вы убедить посетителя в потребности в вашем товаре зависит купит он его или нет. Страничка товара — это последний пункт в воронке продаж перед тем, как пользователь нажмет «оформить заказ».');
+cdb.addItem('Кофеварка', 50, 'Bork F123', './public/1.jpg', './public/2.jpg', './public/3.jpg', 'Описание продукта – это главное основание для покупки. От того, сможете ли вы убедить посетителя в потребности в вашем товаре зависит купит он его или нет. Страничка товара — это последний пункт в воронке продаж перед тем, как пользователь нажмет «оформить заказ».');
+cdb.addItem('Пылесос', 250, 'Dison J21', './public/1.jpg', './public/2.jpg', './public/3.jpg', 'Описание продукта – это главное основание для покупки. От того, сможете ли вы убедить посетителя в потребности в вашем товаре зависит купит он его или нет. Страничка товара — это последний пункт в воронке продаж перед тем, как пользователь нажмет «оформить заказ».');
+console.log('Загруженный каталог товаров:');
+console.log(cdb.items);
+
+/* получаем информацию из ссылки */
+const basketInitParams = decodeURI(location.toString()); // getting params from url
+const params2 = basketInitParams.split('?'); // splitting into array before and after '?'
+const params1 = params2[1].split('&'); // splitting each param
+const paramObj = {}; //creating object, that will hold our params
+for (keys in params1){
+	let split = params1[keys].split('=');
+	db.addBasket(split[0],split[1]);
+}
+
+db.getBasketInfoConsole();
+
+/* Логика отображения: */
+const basketDivLink = document.getElementById('contain-div');
+db.htmlEdit(basketDivLink, db.htmlGenerateBasket());
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
