@@ -128,9 +128,9 @@ let itemsDatabaseObj = {
 			*/
 			let result = []
 			for (items in this.basket){
-				result.push(`<div class='item-wrap'><div class='item-desc'>${this.basket[items].name}</div><div class='item-stats'><div class='item-plus' onclick='db.htmlPlusItem("${this.basket[items].name}")'>Добавить</div><div class='item-count' data-name='${this.basket[items].name}'>${this.basket[items].count}</div><div class='item-minus' onclick='db.htmlMinusItem("${this.basket[items].name}")'>Убрать</div><div class='items-sum' data-name='${this.basket[items].name}'>${this.calculateItemsCost(items)}</div></div></div>`);			
+				result.push(`<div class='item-wrap'><div class='item-desc'>${this.basket[items].name}</div><div class='item-stats'><div class='item-plus' onclick='db.htmlPlusItem("${this.basket[items].name}")'><img src="./public/plus.png" /></div><div class='item-count' data-name='${this.basket[items].name}'>${this.basket[items].count}</div><div class='item-minus' onclick='db.htmlMinusItem("${this.basket[items].name}")'><img src="./public/minus.png" /></div><div class='items-sum' data-name='${this.basket[items].name}'>${this.calculateItemsCost(items)}  rub</div></div></div>`);			
 			}
-			result.push(`<div class='total-sum'>${this.calculateBasketCost()}</div>`)
+			result.push(`<div class='basket-footer'><div class='total-sum'>${this.calculateBasketCost()} rub</div><div class='next-button'><p>Далее</p></div></div>`)
 			return result.join('');
 		// если корзина пустая:
 		} else {
@@ -152,11 +152,11 @@ let itemsDatabaseObj = {
 		const sumLink = document.getElementsByClassName('items-sum');
 		for(let i=0; i<sumLink.length;i++){
 			if(sumLink[i].dataset.name === name){
-				sumLink[i].innerHTML = this.calculateItemsCost(name);
+				sumLink[i].innerHTML = this.calculateItemsCost(name)+' rub';
 			}
 		}
 		// update TOTAL COST
-		document.getElementsByClassName('total-sum')[0].innerHTML = this.calculateBasketCost();
+		document.getElementsByClassName('total-sum')[0].innerHTML = this.calculateBasketCost()+' rub';
 		return;
 	},
 	htmlMinusItem(name){
@@ -180,12 +180,70 @@ let itemsDatabaseObj = {
 		const sumLink = document.getElementsByClassName('items-sum');
 		for(let i=0; i<sumLink.length;i++){
 			if(sumLink[i].dataset.name === name){
-				sumLink[i].innerHTML = this.calculateItemsCost(name);
+				sumLink[i].innerHTML = this.calculateItemsCost(name)+' rub';
 			}
 		}
 		// update TOTAL COST
-		document.getElementsByClassName('total-sum')[0].innerHTML = this.calculateBasketCost();
+		document.getElementsByClassName('total-sum')[0].innerHTML = this.calculateBasketCost()+' rub';
 		return;
+	},
+	/* Анимация и логика СТРЕЛОЧКИ */
+	htmlAnimationArrow(){
+		const arrowsLink = document.getElementsByClassName('arrow');
+		for(let i = 0; i<arrowsLink.length;i++){
+			arrowsLink[i].addEventListener('click',(e)=>{
+				/* отображение стрелочки */
+				const arrLink = e.target;
+				arrLink.classList.toggle('up');
+				arrLink.classList.toggle('down');
+
+				/* отображение панели */
+				const hideLink = arrLink.parentElement.parentElement.nextElementSibling;
+				hideLink.classList.toggle('hidden');
+			})
+		}
+	},
+	htmlAnimationNextButton(){
+		const nextButtonsLink = document.getElementsByClassName('next-button');
+		for (let i=0; i<nextButtonsLink.length;i++){
+			nextButtonsLink[i].addEventListener('click',(e)=>{
+				/* логика последней кнопки */
+				if(i === nextButtonsLink.length-1){
+					/* будет тут */
+				} else {
+					/* ссылки */
+					const buttonLink = e.target; // ссылка на кнопку
+					const arrLinkParent = buttonLink.parentElement.parentElement.parentElement.previousElementSibling.children[1].children[0]; // ссылка на трелочку родителя
+					const arrLinkParentSibling = buttonLink.parentElement.parentElement.parentElement.parentElement.nextElementSibling.children[0].children[1].children[0] // ссылка на стрелку след брата родителя
+					const panelShow = buttonLink.parentElement.parentElement.parentElement.parentElement.nextElementSibling.children[1]; // панель, которую нужно открыть
+					const panelHide = buttonLink.parentElement.parentElement.parentElement; // панель, которую нужно спрятать
+
+					/* проверяем панель, которую должны показать после нажатия кнопки, если она закрыта - то открываем */	
+					if(panelShow.classList.contains('hidden')){				
+						/* отображение стрелочки родителя */
+						arrLinkParent.classList.toggle('up');
+						arrLinkParent.classList.toggle('down');
+						/* отображение стрелочки след. брата родителя */
+						arrLinkParentSibling.classList.toggle('up');
+						arrLinkParentSibling.classList.toggle('down');		
+						/* отображение панели родителя */
+						panelHide.classList.toggle('hidden');
+						/* отображение панели след. брата родителя */
+						panelShow.classList.toggle('hidden');
+						
+					} else {
+						/* если панель НЕ спрятана, то: */
+						// console.log(arrLinkParentSibling);
+
+						/* отображение стрелочки родителя */
+						arrLinkParent.classList.toggle('up');
+						arrLinkParent.classList.toggle('down');
+						/* прячем только родительскую панель */
+						panelHide.classList.toggle('hidden');	
+					}
+				}
+			})
+		}
 	},
 };
 
@@ -270,7 +328,11 @@ db.getBasketInfoConsole();
 const basketDivLink = document.getElementById('contain-div');
 db.htmlEdit(basketDivLink, db.htmlGenerateBasket());
 
+/* Функционал СТРЕЛОЧКА */
+db.htmlAnimationArrow();
 
+/* Функционал ДАЛЕЕ */
+db.htmlAnimationNextButton();
 
 
 
