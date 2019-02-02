@@ -12,6 +12,7 @@ let py;
 const SNAKE_COLOR_ODD = 'blue';
 const SNAKE_COLOR_EVEN = 'yellow';
 const APPLE_COLOR = 'green';
+const BLOCK_COLOR = 'red';
 
 // game started && first key pressed (initialization states)
 const gs = false;
@@ -39,7 +40,8 @@ let tailSize = 20;
 const tailSizeMin = 20;
 // is key in cooldown mode
 const cooldown = false;
-const score = 0; // current score
+let score = 0; // current score
+const fontSizeFamily = '22px serif'; // font size and family
 
 
 // функция рисования яблока
@@ -65,6 +67,38 @@ function spawnApple() {
   }
 
   apples.push(newApple);
+}
+
+// 2. Генерировать временные препятствия на поле.
+// убираю переменные сюда, чтобы проще было проверять ДЗ
+let roadBlocks = []; // {x: ?, y: ?}
+
+const rbColor = 'red';
+const rbW = 10;
+const rbH = 50;
+
+// how often we would check block positioning
+// curretly 50 fps , so if we want 10 sec = 500;
+const roadBlocksTimer = 500;
+let roadBlocksTimerCount = 0;
+
+const generateNewRoadBlock = () =>{
+  let rbX = Math.floor(Math.random() * ctx.width);
+  let rbY = Math.floor(Math.random() * ctx.height);
+  // let rbH = Math.floor(Math.random() * 51);
+  // let rbW = Math.floor((Math.random() * 16) + 5);
+
+  roadBlocks.push({
+    x: rbX,
+    y: rbY,
+  })
+}
+
+const spawnRoadBlocks = () =>{
+  for(keys in roadBlocks){
+    ctx.fillStyle = rbColor;
+    ctx.fillRect(roadBlocks[keys].x, roadBlocks[keys].y, rbW, rbH)
+  }
 }
 
 // итерация рисования экрана
@@ -109,6 +143,8 @@ function loop() {
       // got collision
       tailSize = tailSizeMin; // cut the tailSize
       speed = baseSpeed; // cut the speed (flash nomore lol xD)
+      // 1) Выводить счёт в режиме реального времени.
+      score = 0; // reset the score
     }
   }
 
@@ -134,6 +170,22 @@ function loop() {
       break;
     }
   }
+
+  // 1) Выводить счёт в режиме реального времени.
+  // draw score 
+  ctx.fillStyle = 'white';
+  ctx.font = fontSizeFamily;
+  ctx.fillText(score, 100, 100); // (text, X, Y)
+  
+  // 2) we need to decide how often we will show blocks and how often change positions and how many at once we want to see
+  roadBlocksTimerCount++;
+  if(roadBlocksTimerCount === roadBlocksTimer){
+    // each time we reach our timer - reset timer and do something
+    roadBlocksTimerCount = 0; 
+    
+  }
+
+
 }
 
 function start() {
@@ -185,6 +237,10 @@ function init() {
   px = ~~(canv.width) / 2;
   py = ~~(canv.height) / 2;
   document.addEventListener('keydown', changeDirection);
+  let currentTime = 0;
+  setInterval(()=>{
+    currentTime++
+    console.log(`${currentTime} seconds`)}, 1000);
   start();
 }
 
