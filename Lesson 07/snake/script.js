@@ -41,8 +41,16 @@ const tailSizeMin = 20;
 // is key in cooldown mode
 const cooldown = false;
 let score = 0; // current score
+// Задание 2, переменные
+let roadBlocks = []; // {x: ?, y: ?}
+const rbColor = 'red';
+const rbW = 20; // block width
+const rbH = 50; // block height
+// how often we would check block positioning
+// curretly 50 fps , so if we want 10 sec = 500;
+const roadBlocksTimer = 250;
+let roadBlocksTimerCount = 0;
 const fontSizeFamily = '22px serif'; // font size and family
-
 
 // функция рисования яблока
 function spawnApple() {
@@ -70,23 +78,36 @@ function spawnApple() {
 }
 
 // 2. Генерировать временные препятствия на поле.
-// убираю переменные сюда, чтобы проще было проверять ДЗ
-let roadBlocks = []; // {x: ?, y: ?}
-
-const rbColor = 'red';
-const rbW = 10;
-const rbH = 50;
-
-// how often we would check block positioning
-// curretly 50 fps , so if we want 10 sec = 500;
-const roadBlocksTimer = 500;
-let roadBlocksTimerCount = 0;
 
 const generateNewRoadBlock = () =>{
-  let rbX = Math.floor(Math.random() * ctx.width);
-  let rbY = Math.floor(Math.random() * ctx.height);
-  // let rbH = Math.floor(Math.random() * 51);
-  // let rbW = Math.floor((Math.random() * 16) + 5);
+  let rbX = Math.floor(Math.random() * canv.width);
+  if(rbX > (canv.width - rbW) && rbX <=  canv.width){
+    rbX = canv.width - rbW;
+  }
+  let rbY = Math.floor(Math.random() * canv.height);
+  if(rbY > (canv.height - rbH) && rbY <= canv.height){
+    rbY = canv.height - rbH;
+  }
+
+  // we need to check where we put our blocks
+    // first -> player 
+  for (let i=0; i<tailPieces.length;i++){
+    if (
+      (rbX <= (tailPieces[i].x + pw) &&
+      rbX >= tailPieces[i].x ||
+      (rbX + rbW) >= tailPieces[i].x &&
+      (rbX + rbW) <= (tailPieces[i].x + pw)) || 
+      (
+        rbY <= (tailPieces[i].y + rbH) &&
+        rbY >= tailPieces[i].y ||
+        (rbY + rbH) >= tailPieces[i].y &&
+        (rbY + rbH) <= (tailPieces[i].y + rbH)
+      )
+    ){
+      generateNewRoadBlock();
+      return;
+    }
+  }
 
   roadBlocks.push({
     x: rbX,
@@ -101,6 +122,14 @@ const spawnRoadBlocks = () =>{
   }
 }
 
+const gotCollision = () =>{
+  tailSize = tailSizeMin; // cut the tailSize
+  speed = baseSpeed; // cut the speed (flash nomore lol xD)
+  // 1) Выводить счёт в режиме реального времени.
+  score = 0; // reset the score
+  roadBlocks = [];
+  return;
+}
 // итерация рисования экрана
 function loop() {
   // logic
@@ -133,18 +162,19 @@ function loop() {
   }
 
   // проверка что врезались в себя
-  for (let i = tailPieces.length - tailSizeMin; i >= 0; i--) {
-    if (
-      px < (tailPieces[i].x + pw)
-      && px + pw > tailPieces[i].x
-      && py < (tailPieces[i].y + ph)
-      && py + ph > tailPieces[i].y
-    ) {
-      // got collision
-      tailSize = tailSizeMin; // cut the tailSize
-      speed = baseSpeed; // cut the speed (flash nomore lol xD)
-      // 1) Выводить счёт в режиме реального времени.
-      score = 0; // reset the score
+
+  if(fkp){
+    for (let i = tailPieces.length - tailSizeMin; i >= 0; i--) {
+      if (
+        px < (tailPieces[i].x + pw)
+        && px + pw > tailPieces[i].x
+        && py < (tailPieces[i].y + ph)
+        && py + ph > tailPieces[i].y
+      ) {
+        // got collision
+        gotCollision();
+        break;
+      }
     }
   }
 
@@ -163,6 +193,7 @@ function loop() {
       && py + ph > apples[a].y
     ) {
       // got collision with apple
+      score++;
       apples.splice(a, 1); // remove this apple from the apples list
       tailSize += ~~(baseSpeed / 3); // add tailSize length
       speed += 0.3; // add some speed
@@ -178,13 +209,29 @@ function loop() {
   ctx.fillText(score, 100, 100); // (text, X, Y)
   
   // 2) we need to decide how often we will show blocks and how often change positions and how many at once we want to see
-  roadBlocksTimerCount++;
+  if(fkp){
+    roadBlocksTimerCount++; // timer count for road block appear
+  }
   if(roadBlocksTimerCount === roadBlocksTimer){
     // each time we reach our timer - reset timer and do something
-    roadBlocksTimerCount = 0; 
-    
+    // roadBlocks.splice(0,1);
+    generateNewRoadBlock();
+    roadBlocksTimerCount = 0;
+  } 
+  // road block drawing here:
+  spawnRoadBlocks(); // draw road blocks from array;
+  // check road block collision for snake head
+  for (k in roadBlocks){
+    if(
+      px < (roadBlocks[k].x + rbW) &&
+      (px + pw) > roadBlocks[k].x &&
+      py < (roadBlocks[k].y + rbH) &&
+      (py + ph) > roadBlocks[k].y
+    ){ // got collision
+      gotCollision();
+      break;
+    }
   }
-
 
 }
 
@@ -204,6 +251,7 @@ function changeDirection(evt) {
   if (!fkp && [37, 38, 39, 40].indexOf(evt.keyCode) > -1) {
     fkp = true;
     spawnApple();
+    generateNewRoadBlock();
   }
 
   if (evt.keyCode === 32) {
@@ -238,9 +286,9 @@ function init() {
   py = ~~(canv.height) / 2;
   document.addEventListener('keydown', changeDirection);
   let currentTime = 0;
-  setInterval(()=>{
-    currentTime++
-    console.log(`${currentTime} seconds`)}, 1000);
+  // setInterval(()=>{
+  //   currentTime++
+  //   console.log(`${currentTime} seconds`)}, 1000);
   start();
 }
 
