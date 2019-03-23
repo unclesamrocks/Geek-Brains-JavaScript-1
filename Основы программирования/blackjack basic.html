@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+<head>
+	<title>!! JS #2</title>
+</head>
+<body>
+<script type="text/javascript">
+		
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
+function getCards(){
+	var cards = ["6", "7", "8", "9", "10", "J", "Q", "K", "A"];
+	return cards[getRandomInt(0, cards.length)];
+}
+
+function getStatus(){
+	return "Dealer: " + dealer.join(", ") + " : " + getSum(dealer) + " ||| Player: " + player.join(", ")+ " : " + getSum(player);
+}
+
+function getSum(arr){
+	sumOfCards = 0;
+	//calculate rest of cards
+	for(var i = 0; i < arr.length; i++){
+		var card = arr[i];
+		if(card != "A"){
+			if(card == "J" || card == "Q" || card == "K"){
+				sumOfCards = sumOfCards + 10;
+			} 
+			else{
+				sumOfCards = sumOfCards + parseInt(card);
+			}			
+		}
+	}
+	//calculate "A"
+	for(var i = 0; i <arr.length; i++){
+		var card = arr[i];
+		if(card == "A"){
+			if(sumOfCards > 10){
+				sumOfCards = sumOfCards + 1;
+			}
+			if(sumOfCards <= 10){
+				sumOfCards = sumOfCards + 11;
+			}
+		}		
+	}
+	//return value
+	return sumOfCards;
+}
+
+//got CARDS
+var dealer = [getCards()];
+var player = [getCards(),getCards()];
+var dealerSumm = getSum(dealer);
+var playerSumm = getSum(player);
+//GOT Question?
+var answer = "";
+
+do {
+	if(playerSumm < 21){
+		answer = prompt (getStatus() + " ||| Want one more card? 1 = YES, else - NO");
+		if(answer == "1"){
+			player.push(getCards());
+			playerSumm = getSum(player);
+		}
+	}
+	if(playerSumm == 21){
+		alert("YOU got yourself a 21. Win! " + getStatus());
+		break;
+	}
+	if(playerSumm > 21){
+		alert("OVER9000, it's a loss,buddy! " + getStatus());
+		break;
+	} else {
+		//DEALER cycle!!
+		while(dealerSumm < 17){
+			dealer.push(getCards());
+			dealerSumm = getSum(dealer);
+		}
+		//DEALER cycle ends!!
+		if(dealerSumm == 21){
+			alert("DEALER got himself a 21! " + getStatus());
+			break;
+		}
+		if (dealerSumm > 21) {
+			alert("DEALER OVER9000, its a WIN 4 player! " + getStatus());
+			break;
+		}
+		if (dealerSumm > playerSumm){
+			alert("Dealer wins over Player! " + getStatus());
+			break;
+		}
+		if (dealerSumm == playerSumm){
+			alert("Draft! " + getStatus());
+			break;
+		}
+		else {
+			alert("Player wins over Dealer! " + getStatus());
+			break;
+		}
+	}
+
+} while (answer == "1");	
+
+console.log(getStatus());
+
+</script>
+</body>
+</html>

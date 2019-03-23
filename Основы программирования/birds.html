@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+<head>
+	<title>Default</title>
+</head>
+<body>
+	<script type="text/javascript">
+	
+		var angle = '';
+		var hitCount = parseInt(0);
+		
+		angle = parseInt(prompt("insert attack angle, range is 10-90"))
+		if (angle > 25 && angle < 35 || angle > 65 && angle < 75) {
+			alert("hit target!");
+			hitCount = hitCount + 1;
+		} else {
+			alert ("miss");
+		}
+
+//		angle = parseInt(prompt("insert attack angle, range is 10-90"))
+//		if (angle > 25 && angle < 35) {
+//			alert("hit target1!");
+//			hitCount = hitCount + 1;
+//		} else if (angle > 65 && angle < 75) {
+//			alert("hit target2");
+//			hitCount = hitCount + 1;
+//		} else {
+//			alert ("miss");
+//		}
+
+		alert("finished, with " + hitCount + " hits");
+
+	</script>
+</body>
+</html>

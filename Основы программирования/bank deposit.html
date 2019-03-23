@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+<head>
+	<title>Default</title>
+</head>
+<body>
+	<script type="text/javascript">
+		
+		var n = parseInt(0);
+		var deposit = parseInt(prompt("insert value amount of deposit $$$?"));
+		var numberOfYears = parseInt(prompt("how many years?"));
+		var percentageValue = parseInt(prompt("0-100% value??"))/100;
+		for(n = 1; n <= numberOfYears; n++){
+			deposit = (deposit + (deposit * percentageValue));
+			console.log("Year: " + n + ", amount of cash: " + deposit);
+		}
+
+		console.log("finished");
+
+	</script>
+</body>
+</html>
